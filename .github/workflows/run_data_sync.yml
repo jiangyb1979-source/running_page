@@ -1,4 +1,4 @@
-hname: Run Data Sync
+name: Run Data Sync
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
       - run_page/gen_svg.py
       - run_page/garmin_sync.py
       - run_page/coros_sync.py
-      - run_page/keep_sync.pyh
+      - run_page/keep_sync.py
       - run_page/gpx_sync.py
       - run_page/tcx_sync.py
       - run_page/tcx_to_garmin_sync.py
