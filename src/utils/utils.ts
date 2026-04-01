@@ -112,7 +112,7 @@ const scrollToMap = () => {
 const extractCities = (str: string): string[] => {
   const locations = [];
   let match;
-  const pattern = /([\u4e00-\u9fa5]{2,}(市|自治州|特别行政区|盟|地区))/g;
+  const pattern = /([\u4e00-\u9fa5]{2,}(å¸|èªæ²»å·|ç¹å«è¡æ¿åº|ç|å°åº))/g;
   while ((match = pattern.exec(str)) !== null) {
     locations.push(match[0]);
   }
@@ -123,7 +123,7 @@ const extractCities = (str: string): string[] => {
 const extractDistricts = (str: string): string[] => {
   const locations = [];
   let match;
-  const pattern = /([\u4e00-\u9fa5]{2,}(区|县))/g;
+  const pattern = /([\u4e00-\u9fa5]{2,}(åº|å¿))/g;
   while ((match = pattern.exec(str)) !== null) {
     locations.push(match[0]);
   }
@@ -163,9 +163,9 @@ const locationForRun = (
   let coordinate = null;
   if (location) {
     // Only for Chinese now
-    // should filter 臺灣
+    // should filter èºç£
     const cityMatch = extractCities(location);
-    const provinceMatch = location.match(/[\u4e00-\u9fa5]{2,}(省|自治区)/);
+    const provinceMatch = location.match(/[\u4e00-\u9fa5]{2,}(ç|èªæ²»åº)/);
 
     if (cityMatch) {
       city = cities.find((value) => cityMatch.includes(value)) as string;
@@ -314,12 +314,14 @@ const getActivitySport = (act: Activity): string => {
     else if (act.subtype === 'treadmill')
       return ACTIVITY_TYPES.RUN_TREADMILL_TITLE;
     else return ACTIVITY_TYPES.RUN_GENERIC_TITLE;
-  } else if (act.type === 'hiking') {
+  } else if (act.type === 'hiking' || act.type === 'Hike') {
     return ACTIVITY_TYPES.HIKING_TITLE;
-  } else if (act.type === 'cycling') {
+  } else if (act.type === 'cycling' || act.type === 'Ride') {
     return ACTIVITY_TYPES.CYCLING_TITLE;
-  } else if (act.type === 'walking') {
+  } else if (act.type === 'walking' || act.type === 'Walk') {
     return ACTIVITY_TYPES.WALKING_TITLE;
+  } else if (act.type === 'swimming' || act.type === 'Swim') {
+    return ACTIVITY_TYPES.SWIMMING_TITLE;
   }
   // if act.type contains 'skiing'
   else if (act.type.includes('skiing')) {
@@ -340,6 +342,11 @@ const titleForRun = (run: Activity): string => {
     if (city && city.length > 0 && activity_sport.length > 0) {
       return `${city} ${activity_sport}`;
     }
+  }
+  // For non-running activities, return the sport type directly (e.g. 'éªè¡', 'å¾æ­¥')
+  if (run.type !== 'Run' && run.type !== 'VirtualRun') {
+    const sport = getActivitySport(run);
+    if (sport) return sport;
   }
   // 3. use time+length if location or type is not available
   const runDistance = run.distance / 1000;
